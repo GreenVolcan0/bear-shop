@@ -1,30 +1,16 @@
 const express = require("express");
-const cors = require("cors");
 const { nanoid } = require("nanoid");
+const cors = require("cors");
+
+// Подключаем Swagger
+const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
 
 const app = express();
 const port = 3000;
 
-// Данные: плюшевые медведи (вместо users из методички)
-let products = [
-  { id: nanoid(6), name: "Тедди Классик",    category: "Классические", description: "Мягкий плюшевый медведь в классическом стиле с бархатными ушками.",    price: 1290, stock: 25, rating: 4.8 },
-  { id: nanoid(6), name: "Панда Чи-Чи",      category: "Панды",        description: "Очаровательная панда с чёрно-белым окрасом и большими блестящими глазами.", price: 1590, stock: 18, rating: 4.9 },
-  { id: nanoid(6), name: "Мишка Снежок",     category: "Зимние",       description: "Белоснежный медведь в вязаном шарфике. Создаёт уют в любое время года.", price: 1890, stock: 12, rating: 4.7 },
-  { id: nanoid(6), name: "Медведь-Космонавт",category: "Тематические",  description: "Плюшевый медведь в скафандре. Мечтает покорить космос вместе с вами.", price: 2490, stock:  8, rating: 5.0 },
-  { id: nanoid(6), name: "Бурый Гриша",      category: "Классические", description: "Большой уютный медведь бурого цвета с мягким животиком. Любит объятия.", price: 2190, stock: 15, rating: 4.6 },
-  { id: nanoid(6), name: "Радужный Тедди",   category: "Праздничные",  description: "Яркий медведь с радужной расцветкой. Поднимает настроение с первого взгляда!", price: 1750, stock: 20, rating: 4.5 },
-  { id: nanoid(6), name: "Медведица Розочка",category: "Праздничные",  description: "Нежная розовая медведица с бантиком и сердечком в лапках.", price: 1650, stock: 22, rating: 4.8 },
-  { id: nanoid(6), name: "Полярный Ледик",   category: "Зимние",       description: "Белоснежный полярный медведь с голубыми глазами. Любит арктические приключения.", price: 2090, stock: 10, rating: 4.7 },
-  { id: nanoid(6), name: "Мини-Тедди",       category: "Маленькие",   description: "Крохотный медведик размером с ладонь. Помещается в карман — всегда рядом!", price: 590, stock: 50, rating: 4.4 },
-  { id: nanoid(6), name: "Мишка-Повар",      category: "Тематические",  description: "Плюшевый медведь в поварском колпаке и фартуке. Любит готовить воображаемые блюда.", price: 2350, stock: 9, rating: 4.9 },
-  { id: nanoid(6), name: "Великан Боб",      category: "Большие",      description: "Огромный медведь высотой 80 см. Лучший друг для длинных зимних вечеров.", price: 4990, stock: 5, rating: 4.9 },
-  { id: nanoid(6), name: "Эко-Медведь Лесик",category: "Классические", description: "Из 100% переработанных материалов. Заботится о природе так же, как вы заботитесь о нём.", price: 1990, stock: 30, rating: 4.6 },
-];
-
-// Middleware для парсинга JSON
 app.use(express.json());
 
-// Middleware для логирования запросов
 app.use((req, res, next) => {
   res.on("finish", () => {
     console.log(`[${new Date().toISOString()}] [${req.method}] ${res.statusCode} ${req.path}`);
@@ -35,16 +21,90 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS — разрешаем запросы от фронтенда
-app.use(
-  cors({
-    origin: "http://localhost:3001",
-    methods: ["GET", "POST", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+app.use(cors({
+  origin: "http://localhost:3001",
+  methods: ["GET", "POST", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 
-// Функция-помощник для получения товара из списка
+let products = [
+  { id: nanoid(6), name: "Тедди Классик",     category: "Классические", description: "Мягкий плюшевый медведь в классическом стиле с бархатными ушками.",        price: 1290, stock: 25, rating: 4.8 },
+  { id: nanoid(6), name: "Панда Чи-Чи",       category: "Панды",        description: "Очаровательная панда с чёрно-белым окрасом и большими блестящими глазами.", price: 1590, stock: 18, rating: 4.9 },
+  { id: nanoid(6), name: "Мишка Снежок",      category: "Зимние",       description: "Белоснежный медведь в вязаном шарфике. Создаёт уют в любое время года.",    price: 1890, stock: 12, rating: 4.7 },
+  { id: nanoid(6), name: "Медведь-Космонавт", category: "Тематические", description: "Плюшевый медведь в скафандре. Мечтает покорить космос вместе с вами.",      price: 2490, stock:  8, rating: 5.0 },
+  { id: nanoid(6), name: "Бурый Гриша",       category: "Классические", description: "Большой уютный медведь бурого цвета с мягким животиком. Любит объятия.",    price: 2190, stock: 15, rating: 4.6 },
+  { id: nanoid(6), name: "Радужный Тедди",    category: "Праздничные",  description: "Яркий медведь с радужной расцветкой. Поднимает настроение!",                 price: 1750, stock: 20, rating: 4.5 },
+  { id: nanoid(6), name: "Медведица Розочка", category: "Праздничные",  description: "Нежная розовая медведица с бантиком и сердечком в лапках.",                  price: 1650, stock: 22, rating: 4.8 },
+  { id: nanoid(6), name: "Полярный Ледик",    category: "Зимние",       description: "Белоснежный полярный медведь с голубыми глазами.",                           price: 2090, stock: 10, rating: 4.7 },
+  { id: nanoid(6), name: "Мини-Тедди",        category: "Маленькие",    description: "Крохотный медведик размером с ладонь. Всегда рядом!",                        price:  590, stock: 50, rating: 4.4 },
+  { id: nanoid(6), name: "Мишка-Повар",       category: "Тематические", description: "Плюшевый медведь в поварском колпаке и фартуке.",                            price: 2350, stock:  9, rating: 4.9 },
+  { id: nanoid(6), name: "Великан Боб",       category: "Большие",      description: "Огромный медведь высотой 80 см. Лучший друг для зимних вечеров.",            price: 4990, stock:  5, rating: 4.9 },
+  { id: nanoid(6), name: "Эко-Медведь Лесик", category: "Классические", description: "Из 100% переработанных материалов. Заботится о природе.",                   price: 1990, stock: 30, rating: 4.6 },
+];
+
+// Swagger definition
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "API магазина плюшевых медведей",
+      version: "1.0.0",
+      description: "Простое API для управления товарами интернет-магазина плюшевых медведей",
+    },
+    servers: [
+      { url: `http://localhost:${port}`, description: "Локальный сервер" },
+    ],
+  },
+  apis: ["./app.js"],
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Product:
+ *       type: object
+ *       required:
+ *         - name
+ *         - category
+ *         - description
+ *         - price
+ *         - stock
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: Автоматически сгенерированный уникальный ID товара
+ *         name:
+ *           type: string
+ *           description: Название товара
+ *         category:
+ *           type: string
+ *           description: Категория товара
+ *         description:
+ *           type: string
+ *           description: Описание товара
+ *         price:
+ *           type: number
+ *           description: Цена товара в рублях
+ *         stock:
+ *           type: integer
+ *           description: Количество на складе
+ *         rating:
+ *           type: number
+ *           description: Рейтинг товара от 0 до 5
+ *       example:
+ *         id: "abc123"
+ *         name: "Тедди Классик"
+ *         category: "Классические"
+ *         description: "Мягкий плюшевый медведь"
+ *         price: 1290
+ *         stock: 25
+ *         rating: 4.8
+ */
+
 function findProductOr404(id, res) {
   const product = products.find((p) => p.id === id);
   if (!product) {
@@ -54,9 +114,52 @@ function findProductOr404(id, res) {
   return product;
 }
 
-// POST /api/products
+/**
+ * @swagger
+ * /api/products:
+ *   post:
+ *     summary: Создаёт новый товар
+ *     tags: [Products]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - category
+ *               - description
+ *               - price
+ *               - stock
+ *             properties:
+ *               name:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               stock:
+ *                 type: integer
+ *               rating:
+ *                 type: number
+ *     responses:
+ *       201:
+ *         description: Товар успешно создан
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: Ошибка в теле запроса
+ */
 app.post("/api/products", (req, res) => {
   const { name, category, description, price, stock, rating } = req.body;
+  if (!name || !category || !description || price === undefined || stock === undefined) {
+    return res.status(400).json({ error: "name, category, description, price and stock are required" });
+  }
   const newProduct = {
     id: nanoid(6),
     name: name.trim(),
@@ -70,26 +173,104 @@ app.post("/api/products", (req, res) => {
   res.status(201).json(newProduct);
 });
 
-// GET /api/products
+/**
+ * @swagger
+ * /api/products:
+ *   get:
+ *     summary: Возвращает список всех товаров
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: Список товаров
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ */
 app.get("/api/products", (req, res) => {
   res.json(products);
 });
 
-// GET /api/products/:id
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   get:
+ *     summary: Получает товар по ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID товара
+ *     responses:
+ *       200:
+ *         description: Данные товара
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       404:
+ *         description: Товар не найден
+ */
 app.get("/api/products/:id", (req, res) => {
-  const id = req.params.id;
-  const product = findProductOr404(id, res);
+  const product = findProductOr404(req.params.id, res);
   if (!product) return;
   res.json(product);
 });
 
-// PATCH /api/products/:id
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   patch:
+ *     summary: Обновляет данные товара
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID товара
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               stock:
+ *                 type: integer
+ *               rating:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Обновлённый товар
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: Нет данных для обновления
+ *       404:
+ *         description: Товар не найден
+ */
 app.patch("/api/products/:id", (req, res) => {
   const id = req.params.id;
   const product = findProductOr404(id, res);
   if (!product) return;
 
-  // Нельзя PATCH без полей
   if (
     req.body?.name === undefined &&
     req.body?.category === undefined &&
@@ -112,7 +293,25 @@ app.patch("/api/products/:id", (req, res) => {
   res.json(product);
 });
 
-// DELETE /api/products/:id
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   delete:
+ *     summary: Удаляет товар
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID товара
+ *     responses:
+ *       204:
+ *         description: Товар успешно удалён (нет тела ответа)
+ *       404:
+ *         description: Товар не найден
+ */
 app.delete("/api/products/:id", (req, res) => {
   const id = req.params.id;
   const exists = products.some((p) => p.id === id);
@@ -120,7 +319,7 @@ app.delete("/api/products/:id", (req, res) => {
 
   products = products.filter((p) => p.id !== id);
 
-  // Правильное 204 без тела
+  // Правильнее 204 без тела
   res.status(204).send();
 });
 
@@ -138,4 +337,5 @@ app.use((err, req, res, next) => {
 // Запуск сервера
 app.listen(port, () => {
   console.log(`Сервер запущен на http://localhost:${port}`);
+  console.log(`Swagger UI: http://localhost:${port}/api-docs`);
 });
