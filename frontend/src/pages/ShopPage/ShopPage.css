@@ -1,0 +1,263 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #160715;
+  color: #e7eaf3;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
+
+.header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+.header__inner {
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header__right {
+  opacity: 0.75;
+  font-size: 13px;
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+}
+
+.container {
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.toolbar .title {
+  margin: 0;
+  font-size: 20px;
+}
+
+.btn {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.btn--primary {
+  background: rgba(99, 102, 241, 0.18);
+  border: 1px solid rgba(99, 102, 241, 0.55);
+}
+.btn--danger {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.empty {
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  opacity: 0.85;
+}
+
+.productRow {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+}
+
+.productTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  color: #a5b4fc;
+}
+
+.rating {
+  font-size: 12px;
+  color: #f5c842;
+}
+.rating span {
+  color: #e7eaf3;
+  opacity: 0.7;
+  margin-left: 3px;
+}
+
+.productName {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.productDesc {
+  font-size: 13px;
+  opacity: 0.7;
+  line-height: 1.5;
+}
+
+.productMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.productPrice {
+  font-size: 17px;
+  font-weight: 700;
+  color: #818cf8;
+}
+
+.productStock {
+  font-size: 12px;
+  opacity: 0.6;
+}
+.productStock--out {
+  color: #ef4444;
+  opacity: 1;
+}
+
+.productActions {
+  display: flex;
+  gap: 8px;
+}
+
+.footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+.footer__inner {
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 14px 16px;
+  opacity: 0.7;
+  font-size: 13px;
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 200;
+}
+
+.modal {
+  width: 100%;
+  max-width: 480px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #0f1526;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+.modal__header {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal__title {
+  font-weight: 700;
+}
+.modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.iconBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.form {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.formRow {
+  display: flex;
+  gap: 10px;
+}
+.formRow .label {
+  flex: 1;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.input {
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: #e7eaf3;
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+}
+.input:focus {
+  border-color: rgba(99, 102, 241, 0.7);
+}
+.input--textarea {
+  resize: vertical;
+  min-height: 72px;
+}
+
+/*# sourceMappingURL=ShopPage.css.map */
